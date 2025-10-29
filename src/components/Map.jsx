@@ -122,56 +122,68 @@ const Map = ({ language, placedUnits, terrainZones, selectedTerrain, onDropUnit,
     if (!map.current || !map.current.isStyleLoaded()) return;
 
     // Remove existing terrain layers
-    const layers = map.current.getStyle().layers;
-    layers.forEach(layer => {
-      if (layer.id.startsWith('terrain-')) {
-        map.current.removeLayer(layer.id);
-      }
-    });
+    try {
+      const layers = map.current.getStyle().layers;
+      layers.forEach(layer => {
+        if (layer.id.startsWith('terrain-')) {
+          if (map.current.getLayer(layer.id)) {
+            map.current.removeLayer(layer.id);
+          }
+        }
+      });
 
-    const sources = Object.keys(map.current.getStyle().sources);
-    sources.forEach(source => {
-      if (source.startsWith('terrain-')) {
-        map.current.removeSource(source);
-      }
-    });
+      const sources = Object.keys(map.current.getStyle().sources);
+      sources.forEach(source => {
+        if (source.startsWith('terrain-')) {
+          if (map.current.getSource(source)) {
+            map.current.removeSource(source);
+          }
+        }
+      });
+    } catch (error) {
+      console.warn('Error removing terrain layers:', error);
+    }
 
     // Add new terrain zones
     terrainZones.forEach((zone, index) => {
       const sourceId = `terrain-${zone.id}-${index}`;
       const layerId = `terrain-layer-${zone.id}-${index}`;
 
-      if (!map.current.getSource(sourceId)) {
-        map.current.addSource(sourceId, {
-          type: 'geojson',
-          data: {
-            type: 'Feature',
-            geometry: {
-              type: 'Polygon',
-              coordinates: [zone.coordinates]
+      try {
+        if (!map.current.getSource(sourceId)) {
+          map.current.addSource(sourceId, {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              geometry: {
+                type: 'Polygon',
+                coordinates: [zone.coordinates]
+              }
             }
-          }
-        });
+          });
 
-        map.current.addLayer({
-          id: layerId,
-          type: 'fill',
-          source: sourceId,
-          paint: {
-            'fill-color': zone.color,
-            'fill-opacity': 0.5
-          }
-        });
+          map.current.addLayer({
+            id: layerId,
+            type: 'fill',
+            source: sourceId,
+            paint: {
+              'fill-color': zone.color,
+              'fill-opacity': 0.5
+            }
+          });
 
-        map.current.addLayer({
-          id: `${layerId}-outline`,
-          type: 'line',
-          source: sourceId,
-          paint: {
-            'line-color': zone.borderColor,
-            'line-width': 2
-          }
-        });
+          map.current.addLayer({
+            id: `${layerId}-outline`,
+            type: 'line',
+            source: sourceId,
+            paint: {
+              'line-color': zone.borderColor,
+              'line-width': 2
+            }
+          });
+        }
+      } catch (error) {
+        console.warn('Error adding terrain zone:', error);
       }
     });
   }, [terrainZones]);

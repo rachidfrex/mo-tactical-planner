@@ -5,6 +5,11 @@ import { GENDARMERIE_UNIT } from '../data/units';
 export async function exportMissionPDF(missionTitle, placedUnits, terrainZones, language) {
   const pdf = new jsPDF('p', 'mm', 'a4');
   
+  // Sanitize mission title to prevent injection and ensure it fits
+  const sanitizedTitle = String(missionTitle || 'Untitled Mission')
+    .replace(/[^\w\s\u0600-\u06FF-]/g, '') // Allow alphanumeric, spaces, and Arabic characters
+    .substring(0, 100); // Limit length
+  
   // Header
   pdf.setFontSize(20);
   pdf.setTextColor(74, 93, 35);
@@ -18,7 +23,7 @@ export async function exportMissionPDF(missionTitle, placedUnits, terrainZones, 
   const dateLabel = language === 'fr' ? 'Date:' : 'التاريخ:';
   const missionLabel = language === 'fr' ? 'Mission:' : 'المهمة:';
   pdf.text(`${dateLabel} ${new Date().toLocaleDateString()}`, 20, 35);
-  pdf.text(`${missionLabel} ${missionTitle}`, 20, 42);
+  pdf.text(`${missionLabel} ${sanitizedTitle}`, 20, 42);
   
   // Try to capture map screenshot
   try {
