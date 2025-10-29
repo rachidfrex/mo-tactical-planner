@@ -55,16 +55,14 @@ const UnitSelector = ({ language, onSelectElement, selectedElement }) => {
           {Object.values(MO_ELEMENTS).map((element) => (
             <div key={element.id} className="relative">
               <div
+                onClick={() => onSelectElement(element.type)}
                 className={`w-full glass-panel p-3 transition-all cursor-pointer ${
                   selectedElement === element.type
                     ? 'ring-2 ring-military-orange bg-military-orange/10'
                     : 'hover:bg-white/5'
                 }`}
               >
-                <div 
-                  className="flex items-center justify-between"
-                  onClick={() => onSelectElement(element.type)}
-                >
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span 
                       className="text-2xl p-2 rounded-lg"
