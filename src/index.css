@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  body {
+    @apply m-0 p-0 font-sans antialiased;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    background: rgba(74, 93, 35, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 140, 66, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .glass-panel:hover {
+    border-color: rgba(255, 140, 66, 0.5);
+  }
+
+  .glass-button {
+    background: linear-gradient(135deg, rgba(74, 93, 35, 0.8), rgba(255, 140, 66, 0.8));
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 140, 66, 0.4);
+  }
+
+  .glass-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 140, 66, 0.4);
+  }
+
+  .glass-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(26, 26, 26, 0.5);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 140, 66, 0.5);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 140, 66, 0.7);
+  }
+
+  /* Range input styling */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-track {
+    background: rgba(255, 140, 66, 0.2);
+    height: 6px;
+    border-radius: 3px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #FF8C42;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    margin-top: -5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    background: #4A5D23;
+  }
+
+  input[type="range"]::-moz-range-track {
+    background: rgba(255, 140, 66, 0.2);
+    height: 6px;
+    border-radius: 3px;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    background: #FF8C42;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  input[type="range"]::-moz-range-thumb:hover {
+    background: #4A5D23;
+  }
+}
+
+/* MapLibre GL styles */
+.maplibregl-popup-content {
+  background: white;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.maplibregl-popup-close-button {
+  font-size: 20px;
+  padding: 4px 8px;
+  color: #666;
+}
+
+.maplibregl-popup-close-button:hover {
+  color: #FF8C42;
+  background: transparent;
+}
+
+/* Unit marker animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.unit-marker:hover {
+  animation: pulse 1s ease-in-out infinite;
+}
