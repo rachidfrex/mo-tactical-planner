@@ -4,8 +4,19 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { useDrop } from 'react-dnd';
 import { MAP_CONFIG } from '../utils/mapHelpers';
 import { GENDARMERIE_UNIT } from '../data/units';
+import { MO_ELEMENTS } from '../data/moElements';
 
-const Map = ({ language, placedUnits, terrainZones, selectedTerrain, onDropUnit, onAddTerrainZone }) => {
+const Map = ({ 
+  language, 
+  placedUnits, 
+  terrainZones, 
+  selectedTerrain, 
+  onDropUnit, 
+  onAddTerrainZone,
+  selectedElement,
+  placedElements,
+  onAddElement
+}) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const markers = useRef([]);
@@ -44,13 +55,21 @@ const Map = ({ language, placedUnits, terrainZones, selectedTerrain, onDropUnit,
     map.current.addControl(new maplibregl.ScaleControl(), 'bottom-left');
     map.current.addControl(new maplibregl.FullscreenControl(), 'top-left');
 
+    // Add click handler for placing MO/SO elements
+    map.current.on('click', (e) => {
+      if (selectedElement && onAddElement) {
+        const { lng, lat } = e.lngLat;
+        onAddElement(selectedElement, lat, lng);
+      }
+    });
+
     return () => {
       if (map.current) {
         map.current.remove();
         map.current = null;
       }
     };
-  }, []);
+  }, [selectedElement, onAddElement]);
 
   // Update markers when units change
   useEffect(() => {
@@ -60,7 +79,7 @@ const Map = ({ language, placedUnits, terrainZones, selectedTerrain, onDropUnit,
     markers.current.forEach(m => m.remove());
     markers.current = [];
 
-    // Add new markers
+    // Add new markers for generic units
     placedUnits.forEach(unit => {
       const el = document.createElement('div');
       el.className = 'unit-marker';
@@ -108,14 +127,100 @@ const Map = ({ language, placedUnits, terrainZones, selectedTerrain, onDropUnit,
         closeOnClick: false
       }).setHTML(popupContent);
 
-      const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+      const marker = new maplibregl.Marker({ element: el, anchor: 'bottom', draggable: true })
         .setLngLat([unit.lng, unit.lat])
         .setPopup(popup)
         .addTo(map.current);
 
       markers.current.push(marker);
     });
-  }, [placedUnits, language]);
+
+    // Add new markers for MO/SO elements
+    placedElements.forEach(element => {
+      const elementDef = MO_ELEMENTS[element.elementType];
+      if (!elementDef) return;
+
+      const el = document.createElement('div');
+      el.className = 'mo-element-marker';
+      el.innerHTML = `
+        <div style="
+          background: ${elementDef.color};
+          color: white;
+          padding: 8px 12px;
+          border-radius: 50%;
+          font-size: 24px;
+          border: 3px solid #FF8C42;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+          cursor: pointer;
+          transition: transform 0.3s ease;
+        ">
+          ${elementDef.icon}
+        </div>
+      `;
+
+      el.addEventListener('mouseenter', () => {
+        el.style.transform = 'scale(1.2)';
+      });
+
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = 'scale(1)';
+      });
+
+      const translations = {
+        fr: {
+          personnel: 'Personnel',
+          role: 'Rôle',
+          position: 'Position',
+          tactics: 'Tactiques'
+        },
+        ar: {
+          personnel: 'الأفراد',
+          role: 'الدور',
+          position: 'الموقع',
+          tactics: 'التكتيكات'
+        }
+      };
+
+      const t = translations[language];
+
+      const popupContent = `
+        <div style="padding: 12px; color: #000; max-width: 250px;">
+          <h3 style="font-weight: bold; margin-bottom: 8px; font-size: 14px; color: ${elementDef.color};">
+            ${elementDef.name[language]}
+          </h3>
+          <p style="margin: 4px 0; font-size: 11px;">
+            <strong>${t.personnel}:</strong> ${element.personnel}
+          </p>
+          <p style="margin: 6px 0; font-size: 11px;">
+            <strong>${t.role}:</strong><br/>
+            ${elementDef.role[language]}
+          </p>
+          <p style="margin: 6px 0; font-size: 11px;">
+            <strong>${t.position}:</strong><br/>
+            ${elementDef.position[language]}
+          </p>
+          <p style="margin: 6px 0; font-size: 11px;">
+            <strong>${t.tactics}:</strong><br/>
+            ${elementDef.tactics[language]}
+          </p>
+        </div>
+      `;
+
+      const popup = new maplibregl.Popup({ 
+        offset: 25,
+        closeButton: true,
+        closeOnClick: false,
+        maxWidth: '300px'
+      }).setHTML(popupContent);
+
+      const marker = new maplibregl.Marker({ element: el, anchor: 'bottom', draggable: true })
+        .setLngLat([element.lng, element.lat])
+        .setPopup(popup)
+        .addTo(map.current);
+
+      markers.current.push(marker);
+    });
+  }, [placedUnits, placedElements, language]);
 
   // Add terrain zones as GeoJSON layers
   useEffect(() => {
@@ -196,7 +301,7 @@ const Map = ({ language, placedUnits, terrainZones, selectedTerrain, onDropUnit,
       className="w-full h-full transition-opacity duration-300"
       style={{ 
         opacity: isOver ? 0.8 : 1,
-        cursor: selectedTerrain ? 'crosshair' : 'default'
+        cursor: selectedTerrain ? 'crosshair' : selectedElement ? 'crosshair' : 'default'
       }}
     />
   );

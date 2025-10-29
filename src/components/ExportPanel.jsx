@@ -4,15 +4,15 @@ import { exportMissionJSON } from '../utils/exportJSON';
 import { exportMissionPDF } from '../utils/exportPDF';
 import { translations } from '../data/translations';
 
-const ExportPanel = ({ language, missionTitle, placedUnits, terrainZones }) => {
+const ExportPanel = ({ language, missionTitle, placedUnits, terrainZones, placedElements }) => {
   const t = (key) => translations[language][key];
 
   const handleExportJSON = () => {
-    exportMissionJSON(missionTitle, placedUnits, terrainZones, language);
+    exportMissionJSON(missionTitle, placedUnits, terrainZones, placedElements, language);
   };
 
   const handleExportPDF = async () => {
-    await exportMissionPDF(missionTitle, placedUnits, terrainZones, language);
+    await exportMissionPDF(missionTitle, placedUnits, terrainZones, placedElements, language);
   };
 
   return (
@@ -25,7 +25,7 @@ const ExportPanel = ({ language, missionTitle, placedUnits, terrainZones }) => {
         <button
           onClick={handleExportJSON}
           className="glass-button w-full px-4 py-2 rounded-lg text-white font-semibold flex items-center justify-center gap-2"
-          disabled={placedUnits.length === 0}
+          disabled={placedUnits.length === 0 && placedElements.length === 0}
         >
           <FileJson className="w-4 h-4" />
           {t('exportJSON')}
@@ -33,7 +33,7 @@ const ExportPanel = ({ language, missionTitle, placedUnits, terrainZones }) => {
         <button
           onClick={handleExportPDF}
           className="glass-button w-full px-4 py-2 rounded-lg text-white font-semibold flex items-center justify-center gap-2"
-          disabled={placedUnits.length === 0}
+          disabled={placedUnits.length === 0 && placedElements.length === 0}
         >
           <FileText className="w-4 h-4" />
           {t('exportPDF')}

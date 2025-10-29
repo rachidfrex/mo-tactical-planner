@@ -7,6 +7,7 @@ import MissionHeader from './components/MissionHeader';
 import LanguageToggle from './components/LanguageToggle';
 import ExportPanel from './components/ExportPanel';
 import { translations } from './data/translations';
+import { MO_ELEMENTS } from './data/moElements';
 
 function App() {
   const [language, setLanguage] = useState('fr');
@@ -14,6 +15,8 @@ function App() {
   const [placedUnits, setPlacedUnits] = useState([]);
   const [terrainZones, setTerrainZones] = useState([]);
   const [selectedTerrain, setSelectedTerrain] = useState(null);
+  const [selectedElement, setSelectedElement] = useState(null);
+  const [placedElements, setPlacedElements] = useState([]);
 
   const handleDropUnit = (unitId, lat, lng) => {
     const newUnit = {
@@ -37,6 +40,36 @@ function App() {
     ));
   };
 
+  const handleSelectElement = (elementType) => {
+    setSelectedElement(selectedElement === elementType ? null : elementType);
+    setSelectedTerrain(null); // Clear terrain selection when selecting element
+  };
+
+  const handleAddElement = (elementType, lat, lng) => {
+    const elementDef = MO_ELEMENTS[elementType];
+    if (!elementDef) return;
+
+    const newElement = {
+      id: Date.now(),
+      elementType,
+      lat,
+      lng,
+      personnel: elementDef.personnel.default
+    };
+    setPlacedElements([...placedElements, newElement]);
+    setSelectedElement(null); // Clear selection after placing
+  };
+
+  const handleDeleteElement = (id) => {
+    setPlacedElements(placedElements.filter(e => e.id !== id));
+  };
+
+  const handleUpdateElement = (id, updates) => {
+    setPlacedElements(placedElements.map(e => 
+      e.id === id ? { ...e, ...updates } : e
+    ));
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="h-screen w-screen bg-gray-900 flex flex-col overflow-hidden">
@@ -53,10 +86,18 @@ function App() {
           <Sidebar 
             language={language}
             selectedTerrain={selectedTerrain}
-            onSelectTerrain={setSelectedTerrain}
+            onSelectTerrain={(terrain) => {
+              setSelectedTerrain(terrain);
+              setSelectedElement(null); // Clear element selection when selecting terrain
+            }}
             placedUnits={placedUnits}
             onUpdateUnit={handleUpdateUnit}
             onDeleteUnit={handleDeleteUnit}
+            selectedElement={selectedElement}
+            onSelectElement={handleSelectElement}
+            placedElements={placedElements}
+            onUpdateElement={handleUpdateElement}
+            onDeleteElement={handleDeleteElement}
           />
           
           {/* Map */}
@@ -68,6 +109,9 @@ function App() {
               selectedTerrain={selectedTerrain}
               onDropUnit={handleDropUnit}
               onAddTerrainZone={(zone) => setTerrainZones([...terrainZones, zone])}
+              selectedElement={selectedElement}
+              placedElements={placedElements}
+              onAddElement={handleAddElement}
             />
           </div>
           
@@ -82,6 +126,7 @@ function App() {
               missionTitle={missionTitle}
               placedUnits={placedUnits}
               terrainZones={terrainZones}
+              placedElements={placedElements}
             />
           </div>
         </div>

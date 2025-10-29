@@ -22,7 +22,16 @@ export const translations = {
     close: 'Fermer',
     save: 'Enregistrer',
     cancel: 'Annuler',
-    language: 'Langue'
+    language: 'Langue',
+    moElements: 'Éléments MO/SO',
+    placedElements: 'Éléments Déployés',
+    noElements: 'Aucun élément déployé',
+    role: 'Rôle',
+    position: 'Position',
+    tactics: 'Tactiques',
+    formation: 'Formation',
+    bafTotal: 'Total BAF',
+    expectedPersonnel: 'Personnel attendu'
   },
   ar: {
     appTitle: 'مخطط تكتيكي - المغرب',
@@ -47,6 +56,15 @@ export const translations = {
     close: 'إغلاق',
     save: 'حفظ',
     cancel: 'إلغاء',
-    language: 'اللغة'
+    language: 'اللغة',
+    moElements: 'عناصر MO/SO',
+    placedElements: 'العناصر المنشورة',
+    noElements: 'لا توجد عناصر منشورة',
+    role: 'الدور',
+    position: 'الموقع',
+    tactics: 'التكتيكات',
+    formation: 'التشكيل',
+    bafTotal: 'مجموع BAF',
+    expectedPersonnel: 'الأفراد المتوقعون'
   }
 };
