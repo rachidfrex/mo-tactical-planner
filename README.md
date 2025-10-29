@@ -10,9 +10,17 @@ Interactive tactical planning application for Morocco's Royal Gendarmerie with m
 
 - 🗺️ **Interactive Morocco Map** - MapLibre GL with OpenStreetMap tiles
 - 🚔 **Gendarmerie Royale Unit** - Drag & drop deployment system
+- 🛡️ **MO/SO Tactical Elements** - Specialized element placement for Maintenance de l'Ordre (MO) and Service d'Ordre (SO) operations
+  - 🏆 Command & Supervision elements
+  - 🛡️ Front Line formations
+  - ⚔️ Reserve units
+  - 🚑 Logistical support
+  - 🚁 Specialized units (GSI, aerial)
+  - Detailed tactical information (role, position, tactics)
+  - Personnel configuration and BAF (Barrage d'Arrêté Fixe) formation support
 - 🌍 **6 Terrain Types** - Urban, Mountain, Desert, Forest, Coastal, Agricultural
 - 🌐 **Bilingual Support** - French/Arabic with RTL text support
-- 📊 **Export Capabilities** - JSON data export & PDF report generation
+- 📊 **Export Capabilities** - JSON data export & PDF report generation (includes MO/SO elements)
 - 🎨 **Military Design** - Glassmorphism UI with olive green + orange theme
 - 📱 **Responsive** - Desktop and tablet compatible
 
@@ -49,24 +57,33 @@ Visit `http://localhost:5173` in your browser.
 - Drag the Gendarmerie Royale card from the sidebar to the map
 - Units will be placed at the drop location with default stats
 
-### 2. Manage Units
-- Click on unit markers to view details in a popup
-- Use sliders in the sidebar to adjust personnel and vehicles
-- Click the trash icon to remove a unit
+### 2. Deploy MO/SO Tactical Elements
+- Select an element type from the "Éléments MO/SO" section (Command, Front Line, Reserves, Logistics, Specialized)
+- Click the info button (ℹ️) to view detailed tactical information for each element type
+- Click on the map to place the selected element
+- Elements appear with custom icons (🏆 🛡️ ⚔️ 🚑 🚁) and custom colors
+- Click on element markers to view detailed popups with role, position, and tactics information
+- Drag elements to reposition them on the map
 
-### 3. Add Terrain Zones
+### 3. Manage Units & Elements
+- Click on unit/element markers to view details in a popup
+- Use sliders in the sidebar to adjust personnel counts
+- Click the trash icon to remove a unit or element
+- Track all deployed elements in the "Éléments Déployés" section
+
+### 4. Add Terrain Zones
 - Select a terrain type from the sidebar (Urban, Mountain, Desert, etc.)
 - Click on the map to define polygon points
 - Double-click to complete the zone (future feature)
 
-### 4. Change Language
+### 5. Change Language
 - Click the language toggle button (FR/AR) in the top-right
 - All text and unit details will update to the selected language
 - Arabic text displays right-to-left automatically
 
-### 5. Export Mission
-- **JSON Export**: Download complete mission data including units and terrain
-- **PDF Export**: Generate a formatted report with map screenshot and unit details
+### 6. Export Mission
+- **JSON Export**: Download complete mission data including units, MO/SO elements, and terrain
+- **PDF Export**: Generate a formatted report with map screenshot, unit details, and element information
 
 ## 🎨 Design System
 
@@ -90,21 +107,24 @@ mo-tactical-planner/
 ├── src/
 │   ├── components/
 │   │   ├── App.jsx              # Main application component
-│   │   ├── Map.jsx              # MapLibre GL map with drag-drop
+│   │   ├── Map.jsx              # MapLibre GL map with drag-drop & element placement
 │   │   ├── Sidebar.jsx          # Left sidebar with controls
 │   │   ├── UnitCard.jsx         # Draggable unit card
+│   │   ├── UnitSelector.jsx     # MO/SO element selector (NEW)
 │   │   ├── TerrainControl.jsx   # Terrain type selector
 │   │   ├── ExportPanel.jsx      # Export functionality
 │   │   ├── LanguageToggle.jsx   # Language switcher
 │   │   └── MissionHeader.jsx    # Top header bar
 │   ├── data/
 │   │   ├── units.js             # Gendarmerie unit definition
+│   │   ├── moElements.js        # MO/SO tactical elements (NEW)
 │   │   ├── terrainTypes.js      # Terrain type configurations
 │   │   └── translations.js      # French/Arabic translations
 │   ├── utils/
-│   │   ├── exportJSON.js        # JSON export logic
-│   │   ├── exportPDF.js         # PDF generation logic
-│   │   └── mapHelpers.js        # Map configuration
+│   │   ├── exportJSON.js        # JSON export logic (updated)
+│   │   ├── exportPDF.js         # PDF generation logic (updated)
+│   │   ├── mapHelpers.js        # Map configuration
+│   │   └── positioningHelpers.js # Tactical positioning algorithms (NEW)
 │   ├── main.jsx                 # Application entry point
 │   └── index.css                # Global styles and glass effects
 ├── index.html
@@ -129,6 +149,39 @@ The Gendarmerie Royale unit includes:
 - **Vehicles**: 5-20 (default: 10)
 - **Equipment**: Patrol vehicles, communication systems, riot gear, traffic control
 - **Specialties**: Law enforcement, traffic control, border patrol, public security
+
+### MO/SO Element Configuration
+Based on Gendarmerie tactical doctrine (Livret MO Élèves):
+
+**Command & Supervision (🏆)**
+- Personnel: 5-10 (default: 7)
+- Role: Overall coordination, crowd surveillance, order issuance
+- Position: 100-200m rear (MO), central (SO)
+
+**Front Line (🛡️)**
+- Personnel: 30-40 (default: 35)
+- Role: Direct defense with shields and non-lethal holds
+- Position: Foremost, tightly packed barrier formation
+
+**Reserves (⚔️)**
+- Personnel: 40-50 (default: 45)
+- Role: Rapid reinforcement, breach management
+- Position: 50-100m behind front line
+
+**Logistical Support (🚑)**
+- Personnel: 10-15 (default: 12)
+- Role: Medical aid, equipment supply, vehicle management
+- Position: 200m+ rear, near access roads
+
+**Specialized Units (🚁)**
+- Personnel: 10-20 (default: 15)
+- Role: High-risk interventions, aerial support
+- Position: Overhead or flanking (mission-dependent)
+
+**BAF (Barrage d'Arrêté Fixe) Formation**
+- Total: 100 personnel
+- Composition: 35 front line + 45 reserves + 7 command + 13 logistics
+- Formation type: Static defensive barrier to block crowd advances
 
 ## 🚀 Deploy Online
 
