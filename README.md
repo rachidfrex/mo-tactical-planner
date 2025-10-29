@@ -130,7 +130,27 @@ The Gendarmerie Royale unit includes:
 - **Equipment**: Patrol vehicles, communication systems, riot gear, traffic control
 - **Specialties**: Law enforcement, traffic control, border patrol, public security
 
-## 🚀 Build & Deploy
+## 🚀 Deploy Online
+
+### Quick Deploy to Vercel (Recommended) ⭐
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rachidfrex/mo-tactical-planner)
+
+**One-Click Deployment:**
+1. Click the button above
+2. Sign in to Vercel with GitHub
+3. Deploy (takes ~2 minutes)
+4. Your app will be live at `https://your-project.vercel.app`
+
+### Other Deployment Options
+
+- **Netlify**: [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/rachidfrex/mo-tactical-planner)
+- **GitHub Pages**: See [DEPLOYMENT.md](./DEPLOYMENT.md) for instructions
+- **Railway**: Auto-deploys from GitHub
+
+📖 **Full deployment guide**: See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions on all platforms.
+
+### Build Locally
 
 ```bash
 # Build for production
