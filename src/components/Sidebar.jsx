@@ -1,11 +1,25 @@
 import React from 'react';
 import { Trash2, Users, Truck } from 'lucide-react';
 import { GENDARMERIE_UNIT } from '../data/units';
+import { MO_ELEMENTS } from '../data/moElements';
 import UnitCard from './UnitCard';
+import UnitSelector from './UnitSelector';
 import TerrainControl from './TerrainControl';
 import { translations } from '../data/translations';
 
-const Sidebar = ({ language, selectedTerrain, onSelectTerrain, placedUnits, onUpdateUnit, onDeleteUnit }) => {
+const Sidebar = ({ 
+  language, 
+  selectedTerrain, 
+  onSelectTerrain, 
+  placedUnits, 
+  onUpdateUnit, 
+  onDeleteUnit,
+  selectedElement,
+  onSelectElement,
+  placedElements,
+  onUpdateElement,
+  onDeleteElement
+}) => {
   const t = (key) => translations[language][key];
 
   return (
@@ -22,6 +36,13 @@ const Sidebar = ({ language, selectedTerrain, onSelectTerrain, placedUnits, onUp
           </h2>
           <UnitCard language={language} />
         </section>
+
+        {/* MO/SO Elements Section */}
+        <UnitSelector 
+          language={language}
+          selectedElement={selectedElement}
+          onSelectElement={onSelectElement}
+        />
 
         {/* Terrain Section */}
         <section>
@@ -100,6 +121,64 @@ const Sidebar = ({ language, selectedTerrain, onSelectTerrain, placedUnits, onUp
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+        </section>
+
+        {/* Placed MO/SO Elements Section */}
+        <section>
+          <h2 className="text-2xl font-bold text-white mb-4">
+            {t('placedElements')}
+          </h2>
+          {placedElements.length === 0 ? (
+            <p className="text-gray-400 text-sm">{t('noElements')}</p>
+          ) : (
+            <div className="space-y-3">
+              {placedElements.map((element, index) => {
+                const elementDef = MO_ELEMENTS[element.elementType];
+                if (!elementDef) return null;
+
+                return (
+                  <div key={element.id} className="glass-panel p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl">{elementDef.icon}</span>
+                        <div>
+                          <h4 className="text-white font-semibold text-sm">
+                            {elementDef.name[language]} #{index + 1}
+                          </h4>
+                          <p className="text-xs text-gray-400">
+                            {element.lat.toFixed(4)}, {element.lng.toFixed(4)}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => onDeleteElement(element.id)}
+                        className="text-red-400 hover:text-red-300 transition-colors"
+                        title={t('delete')}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Personnel Slider */}
+                    <div>
+                      <label className="text-sm text-gray-300 mb-1 block flex items-center gap-2">
+                        <Users className="w-4 h-4" />
+                        {t('personnel')}: {element.personnel}
+                      </label>
+                      <input
+                        type="range"
+                        min={elementDef.personnel.min}
+                        max={elementDef.personnel.max}
+                        value={element.personnel}
+                        onChange={(e) => onUpdateElement(element.id, { personnel: parseInt(e.target.value) })}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </section>

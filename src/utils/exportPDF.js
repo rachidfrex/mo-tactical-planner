@@ -1,8 +1,9 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { GENDARMERIE_UNIT } from '../data/units';
+import { MO_ELEMENTS } from '../data/moElements';
 
-export async function exportMissionPDF(missionTitle, placedUnits, terrainZones, language) {
+export async function exportMissionPDF(missionTitle, placedUnits, terrainZones, placedElements, language) {
   const pdf = new jsPDF('p', 'mm', 'a4');
   
   // Sanitize mission title to prevent injection and ensure it fits
@@ -67,6 +68,56 @@ export async function exportMissionPDF(missionTitle, placedUnits, terrainZones, 
       y = 20;
     }
   });
+
+  // MO/SO Elements table
+  if (placedElements && placedElements.length > 0) {
+    if (y > 240) {
+      pdf.addPage();
+      y = 20;
+    } else {
+      y += 10;
+    }
+    
+    pdf.setFontSize(14);
+    const elementsTitle = language === 'fr' ? 'ÉLÉMENTS MO/SO DÉPLOYÉS:' : 'عناصر MO/SO المنشورة:';
+    pdf.text(elementsTitle, 20, y);
+    y += 10;
+    
+    placedElements.forEach((element, i) => {
+      const elementDef = MO_ELEMENTS[element.elementType];
+      if (!elementDef) return;
+
+      pdf.setFontSize(10);
+      pdf.text(`${i + 1}. ${elementDef.name[language]}`, 25, y);
+      
+      const personnelLabel = language === 'fr' ? 'Personnel:' : 'الأفراد:';
+      const positionLabel = language === 'fr' ? 'Position:' : 'الموقع:';
+      const roleLabel = language === 'fr' ? 'Rôle:' : 'الدور:';
+      
+      pdf.text(`${personnelLabel} ${element.personnel}`, 25, y + 5);
+      pdf.text(`${positionLabel} [${element.lat.toFixed(4)}, ${element.lng.toFixed(4)}]`, 25, y + 10);
+      
+      // Add role with text wrapping (limited to 80 chars per line for simplicity)
+      const role = elementDef.role[language];
+      const maxChars = 80;
+      if (role.length > maxChars) {
+        const line1 = role.substring(0, maxChars);
+        const line2 = role.substring(maxChars, maxChars * 2);
+        pdf.text(`${roleLabel} ${line1}`, 25, y + 15);
+        if (line2) pdf.text(line2, 25, y + 20);
+        y += 30;
+      } else {
+        pdf.text(`${roleLabel} ${role}`, 25, y + 15);
+        y += 25;
+      }
+      
+      // Add new page if needed
+      if (y > 270 && i < placedElements.length - 1) {
+        pdf.addPage();
+        y = 20;
+      }
+    });
+  }
   
   // Terrain zones
   if (terrainZones.length > 0) {

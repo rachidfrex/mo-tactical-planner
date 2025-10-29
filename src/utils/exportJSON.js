@@ -1,4 +1,4 @@
-export function exportMissionJSON(missionTitle, placedUnits, terrainZones, language) {
+export function exportMissionJSON(missionTitle, placedUnits, terrainZones, placedElements, language) {
   const data = {
     mission: {
       title: missionTitle,
@@ -12,6 +12,11 @@ export function exportMissionJSON(missionTitle, placedUnits, terrainZones, langu
       personnel: u.personnel,
       vehicles: u.vehicles
     })),
+    moElements: placedElements ? placedElements.map(e => ({
+      type: e.elementType,
+      position: [e.lng, e.lat],
+      personnel: e.personnel
+    })) : [],
     terrain: terrainZones.map(t => ({
       type: t.type,
       polygon: t.coordinates
